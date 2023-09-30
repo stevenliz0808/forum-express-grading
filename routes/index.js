@@ -48,14 +48,12 @@ router.post('/comments', authenticated, commentController.postComment)
 
 router.delete('/comments/:id', authenticated, commentController.deleteComment)
 
-router.post(
-  '/favorite/:restaurantId',
+router.post('/favorite/:restaurantId',
   authenticated,
   userController.addFavorite
 )
 
-router.delete(
-  '/favorite/:restaurantId',
+router.delete('/favorite/:restaurantId',
   authenticated,
   userController.removeFavorite
 )
