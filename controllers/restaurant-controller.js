@@ -26,7 +26,8 @@ const restaurantController = {
           description: r.description.substring(0, 50),
           isFavorited: req.user && req.user.FavoritedRestaurants.some(
             fr => fr.id === r.id
-          )
+          ),
+          isLiked: req.user && req.user.LikedRestaurants.some(lr => lr.id === r.id)
         }))
         return res.render('restaurants', {
           restaurants: data,
@@ -44,13 +45,15 @@ const restaurantController = {
       include: [
         Category,
         { model: Comment, include: User },
-        { model: User, as: 'FavoritedUsers' }
+        { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers'}
       ]
     })
       .then(restaurant => {
         if (!restaurant) throw new Error("Restaurant didn't exist!")
         const isFavorited = restaurant.FavoritedUsers.some(fu => fu.id === req.user.id)
-        return res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited })
+        const isLiked = restaurant.LikedUsers.some(lu => lu.id === req.user.id)
+        return res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited, isLiked })
       })
       .catch(err => next(err))
   },

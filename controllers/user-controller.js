@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
-const { Restaurant, Comment, User, Favorite } = require('../models')
+const { Restaurant, Comment, User, Favorite, Like } = require('../models')
 const { localFileHandler } = require('../helpers/file-helper')
+const { raw } = require('express')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -128,6 +129,32 @@ const userController = {
         req.flash('success', 'Remove successfully')
         res.redirect('back')
       })
+      .catch(err => next(err))
+  },
+  addLike: (req, res, next) => {
+    const { restaurantId } = req.params
+    const userId = req.user.id
+    return Promise.all([
+      Restaurant.findByPk(restaurantId, { raw: true }),
+      Like.findOne({ where: { userId, restaurantId }, raw: true })
+    ])
+      .then(([restaurant, like]) => {
+        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        if (like) throw new Error('You haved liked this restaurant!')
+        return Like.create({ restaurantId, userId })
+      })
+      .then(() => res.redirect('back'))
+      .catch(err => next(err))
+  },
+  removeLike: (req, res, next) => {
+    const { restaurantId } = req.params
+    const userId = req.user.id
+    return Like.findOne({ where: { userId, restaurantId } })
+      .then(like => {
+        if (!like) throw new Error("You haven't liked this restaurant!")
+        return like.destroy()
+      })
+      .then(() => res.redirect('back'))
       .catch(err => next(err))
   }
 }
