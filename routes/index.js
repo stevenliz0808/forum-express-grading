@@ -42,8 +42,6 @@ router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant
 
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
 
-router.get('/', (req, res) => res.redirect('/restaurants'))
-
 router.post('/comments', authenticated, commentController.postComment)
 
 router.delete('/comments/:id', authenticated, commentController.deleteComment)
@@ -62,11 +60,15 @@ router.post('/like/:restaurantId', authenticated, userController.addLike)
 
 router.delete('/like/:restaurantId', authenticated, userController.removeLike)
 
+router.get('/users/top', authenticated, userController.getTopUsers)
+
 router.get('/users/:id/edit', authenticated, userController.editUser)
 
 router.get('/users/:id', authenticated, userController.getUser)
 
 router.put('/users/:id', upload.single('image'), authenticated, userController.putUser)
+
+router.get('/', (req, res) => res.redirect('/restaurants'))
 
 router.use('/', errorHandler)
 
