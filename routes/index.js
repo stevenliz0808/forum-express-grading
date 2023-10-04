@@ -36,6 +36,8 @@ router.get(
   restaurantController.getDashboard
 )
 
+router.get('/restaurants/top', authenticated, restaurantController.getTopRestaurants)
+
 router.get('/restaurants/feeds', authenticated, restaurantController.getFeeds)
 
 router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant)

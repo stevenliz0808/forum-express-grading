@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt')
 const { Restaurant, Comment, User, Favorite, Like, Followship } = require('../models')
 const { localFileHandler } = require('../helpers/file-helper')
-const { raw } = require('express')
 
 const userController = {
   signUpPage: (req, res) => {
