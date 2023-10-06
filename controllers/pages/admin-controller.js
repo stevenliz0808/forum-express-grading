@@ -18,28 +18,11 @@ const adminController = {
       .catch(err => next(err))
   },
   postRestaurant: (req, res, next) => {
-    const { name, categoryId, tel, address, openingHours, description } =
-      req.body
-    if (!name) throw new Error('Restaurant name is required!')
-
-    const { file } = req
-    localFileHandler(file)
-      .then(filePath =>
-        Restaurant.create({
-          name,
-          categoryId,
-          tel,
-          address,
-          openingHours,
-          description,
-          image: filePath || null
-        })
-      )
-      .then(() => {
-        req.flash('success', 'restaurant was successfully created')
-        res.redirect('/admin/restaurants')
-      })
-      .catch(err => next(err))
+    adminServices.postRestaurant(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success', 'Restaurant was successfully created')
+      return res.redirect('/admin/restaurants', data)
+    })
   },
   getRestaurant: (req, res, next) => {
     const id = req.params.id
@@ -96,8 +79,7 @@ const adminController = {
   deleteRestaurant: (req, res, next) => {
     adminServices.deleteRestaurant(req, (err, data) => {
       if (err) return next(err)
-      req.session.deletedData = data
-      return res.redirect('/admin/restaurants')
+      return res.redirect('/admin/restaurants', data)
     })
   },
   getUsers: (req, res, next) => {

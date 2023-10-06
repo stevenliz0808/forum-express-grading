@@ -1,4 +1,5 @@
 const { Restaurant, Category } = require('../models')
+const { localFileHandler } = require('../helpers/file-helper')
 
 const adminServices = {
   getRestaurants: (req, cb) => {
@@ -10,7 +11,28 @@ const adminServices = {
       .then(restaurants => cb(null, { restaurants }))
       .catch(err => cb(err))
   },
-  deleteRestaurants: (req, cb) => {
+  postRestaurant: (req, cb) => {
+    const { name, categoryId, tel, address, openingHours, description } =
+      req.body
+    if (!name) throw new Error('Restaurant name is required!')
+
+    const { file } = req
+    localFileHandler(file)
+      .then(filePath =>
+        Restaurant.create({
+          name,
+          categoryId,
+          tel,
+          address,
+          openingHours,
+          description,
+          image: filePath || null
+        })
+      )
+      .then(newRestaurant => cb(null, { restaurant: newRestaurant }))
+      .catch(err => cb(err))
+  },
+  deleteRestaurant: (req, cb) => {
     const id = req.params.id
     return Restaurant.findByPk(id)
       .then(restaurant => {
