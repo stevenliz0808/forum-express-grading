@@ -5,13 +5,13 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const passport = require('./config/passport')
 const methodOverride = require('method-override')
+const dotenv = require('dotenv').config()
 const path = require('path')
 const { getUser } = require('./helpers/auth-helpers')
 const handlebarsHelper = require('./helpers/handlebars-helper')
 
 const app = express()
 const port = process.env.PORT || 3000
-const SESSION_SECRET = 'secret'
 
 app.engine('hbs', handlebars({ extname: '.hbs', helpers: handlebarsHelper }))
 app.set('view engine', 'hbs')
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 app.use(session({
-  secret: SESSION_SECRET,
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false
 }))
