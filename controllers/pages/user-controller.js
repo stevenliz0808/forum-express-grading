@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const { Restaurant, Comment, User, Favorite, Like, Followship } = require('../../models')
 const { localFileHandler } = require('../../helpers/file-helper')
+const userServices = require('../../services/user-services')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -8,21 +9,11 @@ const userController = {
   },
 
   signUp: (req, res, next) => {
-    const { name, email, password, passwordCheck } = req.body
-    if (password !== passwordCheck) throw new Error('密碼不一致')
-    User.findOne({
-      where: { email }
+    userServices.signUp(req, (err, user) => {
+      if (err) return next(err)
+      req.flash('success', '註冊成功')
+      return res.redirect('/signin')
     })
-      .then(user => {
-        if (user) throw new Error('用戶已存在')
-        return bcrypt.hash(password, 10)
-      })
-      .then(hash => User.create({ name, email, password: hash }))
-      .then(() => {
-        req.flash('success', '註冊成功')
-        res.redirect('/signin')
-      })
-      .catch(error => next(error))
   },
 
   signInPage: (req, res) => {
