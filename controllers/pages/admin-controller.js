@@ -1,11 +1,10 @@
-const { Restaurant, User, Category } = require('../../models')
-const { localFileHandler } = require('../../helpers/file-helper')
+const { Restaurant, Category } = require('../../models')
 const adminServices = require('../../services/admin-services')
 
 const adminController = {
   getRestaurants: (req, res, next) => {
-    adminServices.getRestaurants(req, (err, data) =>
-      err ? next(err) : res.render('admin/restaurants', data)
+    adminServices.getRestaurants(req, (err, restaurants) =>
+      err ? next(err) : res.render('admin/restaurants', restaurants)
     )
   },
   createRestaurant: (req, res, next) => {
@@ -18,24 +17,17 @@ const adminController = {
       .catch(err => next(err))
   },
   postRestaurant: (req, res, next) => {
-    adminServices.postRestaurant(req, (err, data) => {
+    adminServices.postRestaurant(req, (err, restaurant) => {
       if (err) return next(err)
       req.flash('success', 'Restaurant was successfully created')
-      return res.redirect('/admin/restaurants', data)
+      req.session.createdData = restaurant
+      return res.redirect('/admin/restaurants')
     })
   },
   getRestaurant: (req, res, next) => {
-    const id = req.params.id
-    Restaurant.findByPk(id, {
-      raw: true,
-      nest: true,
-      include: [Category]
+    adminServices.getRestaurant(req, (err, restaurant) => {
+      err ? next(err) : res.render('admin/restaurant', restaurant)
     })
-      .then(restaurant => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-        res.render('admin/restaurant', { restaurant })
-      })
-      .catch(err => next(err))
   },
   editRestaurant: (req, res, next) => {
     const id = req.params.id
@@ -52,61 +44,29 @@ const adminController = {
       .catch(err => next(err))
   },
   putRestaurant: (req, res, next) => {
-    const { name, categoryId, tel, address, openingHours, description } = req.body
-    const id = req.params.id
-    if (!name) throw new Error('Restaurant name is required!')
-
-    const { file } = req
-    Promise.all([Restaurant.findByPk(id), localFileHandler(file)])
-      .then(([restaurant, filePath]) => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-        return restaurant.update({
-          name,
-          categoryId,
-          tel,
-          address,
-          openingHours,
-          description,
-          image: filePath || restaurant.image
-        })
-      })
-      .then(() => {
-        req.flash('success', 'restaurant was successfully to update')
-        res.redirect('/admin/restaurants')
-      })
-      .catch(err => next(err))
+    adminServices.putRestaurant(req, (err, restaurant) => {
+      if (err) return next(err)
+      req.flash('success', 'restaurant was successfully to update')
+      return res.redirect('/admin/restaurants')
+    })
   },
   deleteRestaurant: (req, res, next) => {
-    adminServices.deleteRestaurant(req, (err, data) => {
+    adminServices.deleteRestaurant(req, (err, restaurant) => {
       if (err) return next(err)
-      return res.redirect('/admin/restaurants', data)
+      return res.redirect('/admin/restaurants', restaurant)
     })
   },
   getUsers: (req, res, next) => {
-    return User.findAll({
-      raw: true
+    adminServices.getUsers(req, (err, users) => {
+      err ? next(err) : res.render('admin/users', users)
     })
-      .then(users => {
-        res.render('admin/users', { users })
-      })
-      .catch(err => next(err))
   },
   patchUser: (req, res, next) => {
-    const id = req.params.id
-    return User.findByPk(id)
-      .then(user => {
-        if (!user) throw new Error("User didn't exist!")
-        if (user.email === 'root@example.com') {
-          req.flash('error', '禁止變更 root 權限')
-          return res.redirect('back')
-        }
-        return user.update({ isAdmin: user.isAdmin ? 0 : 1 })
-      })
-      .then(() => {
-        req.flash('success', '使用者權限變更成功')
-        return res.redirect('/admin/users')
-      })
-      .catch(err => next(err))
+    adminServices.patchUser(req, (err, user) => {
+      if (err) return next(err)
+      req.flash('success', '使用者權限變更成功')
+      return res.redirect('/admin/users')
+    })
   }
 }
 
