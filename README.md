@@ -1,52 +1,27 @@
-# README
+#餐廳論壇
+##歡迎來到餐廳論壇，這是一個讓食客分享餐廳體驗、評論和交流的平台。
 
-1. Fork
-2. git clone
+![登入頁面](./public/img/signin.png)
+![首頁](./public/img/home.png)
 
-## 初始化
-### Initialize
-```
-git remote add upstream https://github.com/ALPHACamp/forum-express-grading.git  # 建立上游連線
-npm install
-```
+##如何使用
+註冊/登入： 使用你的帳戶註冊或登入論壇。
 
-### 設定資料庫
-需要與 config/config.json 一致
+瀏覽餐廳： 瀏覽論壇上的各種餐廳主題。
 
-```
-create database forum;
-```
+發表評論： 點擊餐廳主題進入後，你可以在該主題下發表評論，分享你的用餐體驗。
 
-### 執行測試
-```
-npm run test
-```
+新增餐廳： 如果你發現論壇中缺少某個餐廳，請在論壇上新增一個主題，與其他食客分享。
 
-## 下載作業規格
-以 R01 為例
+互動： 對餐廳進行收藏、按讚，形成有趣的交流。
 
-```
-git checkout -b R01           # 開新分支
-git merge origin/R01-test     # 下載作業規格
-npm run test                  # 直到綠燈全亮
+##技術細節
 
-git add .
-git commit -m "...."
-```
+後端： 基於 Express.js 開發，處理用戶請求、管理數據庫。
 
-## 繳交作業
+數據庫： 使用 MySQL 儲存和檢索用戶和餐廳數據。
 
-```
-git push origin R01           # 上傳本地進度
-```
 
-接著改成到 GitHub 來發 PR。
+##貢獻
+如果你有任何建議或改進的想法，請隨時提出 issue 或提交 pull request。我們歡迎各種形式的貢獻！
 
-## 共用帳號
-請一律設定下面 2 組帳號以利驗收：
-* 第一組帳號有 admin 權限：
-  * email: root@example.com
-  * password: 12345678
-* 第二組帳號沒有 admin 權限：
-  * email: user1@example.com
-  * password: 12345678
